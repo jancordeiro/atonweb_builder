@@ -611,32 +611,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  // Troca de seções no menu lateral (esboço sem lógica de negócio)
-  document.querySelectorAll('.sidebar .nav-link[data-section]').forEach(link => {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      const target = link.dataset.section;
-
-      document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-
-      document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('d-none'));
-      document.getElementById('section-' + target)?.classList.remove('d-none');
-
-      const titles = {
-        templates: ['Templates', 'Escolha um template pronto ou monte o seu bloco a bloco'],
-        temas:     ['Temas', 'Selecione um tema pronto ou personalize fontes e cores'],
-        seo:       ['SEO', 'Gere as metatags de SEO e OpenGraph do site'],
-        plugins:   ['Plugins', 'Ative bibliotecas externas via CDN para usar nos templates'],
-        gerar:     ['Gerar SITE', 'Exporte o HTML, CSS e JS finais do seu projeto']
-      };
-      const [t, s] = titles[target] || ['', ''];
-      document.getElementById('pageTitle').textContent = t;
-      document.getElementById('pageSubtitle').textContent = s;
-    });
-  });
-</script>
+<script src="builder.js"></script>
 
 </body>
 </html>
