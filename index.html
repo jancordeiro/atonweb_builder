@@ -11,8 +11,6 @@
     .sidebar {
       width: 260px;
       min-height: 100vh;
-      position: sticky;
-      top: 0;
     }
     .sidebar .nav-link {
       border-radius: .375rem;
@@ -35,30 +33,36 @@
       border-radius: .5rem;
       background-color: var(--bs-tertiary-bg);
     }
-    .block-placeholder {
-      border: 1px dashed var(--bs-border-color);
-      border-radius: .5rem;
-      padding: 2rem;
-      text-align: center;
-      color: var(--bs-secondary-color);
-      background-color: var(--bs-body-bg);
-      margin-bottom: 1rem;
-    }
-    .block-placeholder:hover {
-      border-color: var(--bs-primary);
-      color: var(--bs-primary);
-    }
     .theme-swatch {
       width: 100%;
       height: 60px;
       border-radius: .5rem;
       border: 1px solid var(--bs-border-color);
     }
-    .plugin-card {
+    .plugin-card, .block-card {
       transition: border-color .15s;
     }
-    .plugin-card:hover {
+    .plugin-card:hover, .block-card:hover {
       border-color: var(--bs-primary) !important;
+    }
+    .block-card .block-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    .block-card[data-plugin] .block-icon {
+      color: var(--bs-success);
+    }
+    .block-card[data-plugin]::after {
+      content: '';
+    }
+
+    /* Desktop: sidebar fixa */
+    @media (min-width: 992px) {
+      .sidebar-desktop {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
     }
   </style>
 </head>
@@ -66,8 +70,8 @@
 
 <div class="d-flex">
 
-  <!-- ============ SIDEBAR ============ -->
-  <aside class="sidebar bg-body-tertiary border-end d-flex flex-column p-3">
+  <!-- ============ SIDEBAR DESKTOP (>= lg) ============ -->
+  <aside class="sidebar sidebar-desktop bg-body-tertiary border-end d-none d-lg-flex flex-column p-3 flex-shrink-0">
     <a href="#" class="d-flex align-items-center gap-2 text-decoration-none mb-4 px-2">
       <i class="bi bi-magic fs-4 text-primary"></i>
       <span class="fs-5 fw-bold text-body">Aton WEB <span class="text-primary">Builder</span></span>
@@ -94,9 +98,7 @@
           <i class="bi bi-puzzle me-2"></i> Plugins
         </a>
       </li>
-      <li class="nav-item mt-2">
-        <hr class="my-2">
-      </li>
+      <li class="nav-item mt-2"><hr class="my-2"></li>
       <li class="nav-item">
         <a href="#" class="nav-link text-success" data-section="gerar">
           <i class="bi bi-download me-2"></i> Gerar SITE
@@ -112,162 +114,224 @@
     </div>
   </aside>
 
+  <!-- ============ SIDEBAR MOBILE OFFCANVAS (< lg) ============ -->
+  <div class="offcanvas offcanvas-start bg-body-tertiary" tabindex="-1" id="sidebarOffcanvas" style="width:280px;">
+    <div class="offcanvas-header border-bottom">
+      <h5 class="offcanvas-title d-flex align-items-center gap-2">
+        <i class="bi bi-magic fs-5 text-primary"></i>
+        <span class="fs-6 fw-bold">Aton WEB <span class="text-primary">Builder</span></span>
+      </h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column p-3">
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a href="#" class="nav-link active" data-section="templates" data-bs-dismiss="offcanvas">
+            <i class="bi bi-layout-text-window-reverse me-2"></i> Templates
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-section="temas" data-bs-dismiss="offcanvas">
+            <i class="bi bi-palette me-2"></i> Temas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-section="seo" data-bs-dismiss="offcanvas">
+            <i class="bi bi-search me-2"></i> SEO
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-section="plugins" data-bs-dismiss="offcanvas">
+            <i class="bi bi-puzzle me-2"></i> Plugins
+          </a>
+        </li>
+        <li class="nav-item mt-2"><hr class="my-2"></li>
+        <li class="nav-item">
+          <a href="#" class="nav-link text-success" data-section="gerar" data-bs-dismiss="offcanvas">
+            <i class="bi bi-download me-2"></i> Gerar SITE
+          </a>
+        </li>
+      </ul>
+      <div class="border-top pt-3 mt-3">
+        <small class="text-secondary d-block">
+          <i class="bi bi-info-circle me-1"></i> Ferramenta interna<br>
+          <span class="ms-4">Aton WEB Agência</span>
+        </small>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ MAIN ============ -->
-  <main class="main-content flex-grow-1 d-flex flex-column">
+  <main class="main-content flex-grow-1 d-flex flex-column min-vw-0">
 
     <!-- Topbar -->
-    <header class="border-bottom bg-body-tertiary px-4 py-3 d-flex justify-content-between align-items-center sticky-top">
-      <div>
-        <h1 class="h4 mb-0" id="pageTitle">Templates</h1>
-        <small class="text-secondary" id="pageSubtitle">Escolha um template pronto ou monte o seu bloco a bloco</small>
+    <header class="border-bottom bg-body-tertiary px-3 px-md-4 py-3 d-flex justify-content-between align-items-center sticky-top gap-2">
+      <div class="d-flex align-items-center gap-2 min-vw-0">
+        <button class="btn btn-outline-secondary btn-sm d-lg-none" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-label="Abrir menu">
+          <i class="bi bi-list fs-5"></i>
+        </button>
+        <div class="min-vw-0">
+          <h1 class="h5 h4-md mb-0 text-truncate" id="pageTitle">Templates</h1>
+          <small class="text-secondary d-none d-sm-block text-truncate" id="pageSubtitle">
+            Escolha um template pronto ou monte o seu bloco a bloco
+          </small>
+        </div>
       </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary btn-sm">
-          <i class="bi bi-eye me-1"></i> Pré-visualizar
+      <div class="d-flex gap-2 flex-shrink-0">
+        <button class="btn btn-outline-secondary btn-sm d-none d-sm-inline-flex">
+          <i class="bi bi-eye me-1"></i> <span class="d-none d-md-inline">Pré-visualizar</span>
         </button>
         <button class="btn btn-primary btn-sm">
-          <i class="bi bi-download me-1"></i> Gerar SITE
+          <i class="bi bi-download me-1"></i> <span class="d-none d-md-inline">Gerar</span> SITE
         </button>
       </div>
     </header>
 
     <!-- Content area -->
-    <div class="p-4 flex-grow-1">
+    <div class="p-3 p-md-4 flex-grow-1">
 
       <!-- ============ SECTION: TEMPLATES ============ -->
       <section id="section-templates">
         <div class="row g-4">
 
-          <!-- Coluna esquerda: Templates prontos -->
-          <div class="col-lg-4">
-            <div class="card bg-body-tertiary border-secondary h-100">
-              <div class="card-header border-secondary">
-                <h6 class="mb-0"><i class="bi bi-collection me-2"></i>Templates prontos</h6>
-              </div>
-              <div class="card-body d-flex flex-column gap-3">
-
-                <div class="card bg-body border-secondary plugin-card">
-                  <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <strong>Landing Page — SaaS</strong>
-                      <span class="badge text-bg-primary">Pronto</span>
-                    </div>
-                    <p class="small text-secondary mb-2">Hero + Features + Pricing + CTA + Footer</p>
-                    <button class="btn btn-sm btn-outline-primary w-100">
-                      <i class="bi bi-plus-lg me-1"></i> Usar este template
-                    </button>
-                  </div>
-                </div>
-
-                <div class="card bg-body border-secondary plugin-card">
-                  <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <strong>Site Institucional</strong>
-                      <span class="badge text-bg-primary">Pronto</span>
-                    </div>
-                    <p class="small text-secondary mb-2">Navbar + Hero + Sobre + Serviços + Contato + Footer</p>
-                    <button class="btn btn-sm btn-outline-primary w-100">
-                      <i class="bi bi-plus-lg me-1"></i> Usar este template
-                    </button>
-                  </div>
-                </div>
-
-                <div class="card bg-body border-secondary plugin-card">
-                  <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <strong>Portfólio Pessoal</strong>
-                      <span class="badge text-bg-primary">Pronto</span>
-                    </div>
-                    <p class="small text-secondary mb-2">Hero + Projetos (grid) + Skills + Contato + Footer</p>
-                    <button class="btn btn-sm btn-outline-primary w-100">
-                      <i class="bi bi-plus-lg me-1"></i> Usar este template
-                    </button>
-                  </div>
-                </div>
-
-                <div class="card bg-body border-secondary plugin-card">
-                  <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <strong>Página de Captura</strong>
-                      <span class="badge text-bg-primary">Pronto</span>
-                    </div>
-                    <p class="small text-secondary mb-2">Hero centralizado + Formulário + Prova social + Footer</p>
-                    <button class="btn btn-sm btn-outline-primary w-100">
-                      <i class="bi bi-plus-lg me-1"></i> Usar este template
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <!-- Coluna direita: Construtor -->
-          <div class="col-lg-8">
+          <!-- Coluna esquerda: Adicionar bloco -->
+          <div class="col-12 col-lg-5 col-xl-4">
             <div class="card bg-body-tertiary border-secondary h-100">
               <div class="card-header border-secondary d-flex justify-content-between align-items-center">
-                <h6 class="mb-0"><i class="bi bi-grid-3x3-gap me-2"></i>Construtor — blocos da página</h6>
-                <span class="badge text-bg-secondary">0 blocos</span>
+                <h6 class="mb-0"><i class="bi bi-plus-square me-2"></i>Adicionar bloco</h6>
+                <span class="badge text-bg-secondary" id="availableBlocksCount">9</span>
               </div>
               <div class="card-body">
-                <div class="builder-canvas p-4 mb-4 d-flex flex-column align-items-center justify-content-center">
-                  <i class="bi bi-plus-circle fs-1 text-secondary mb-2"></i>
-                  <p class="text-secondary mb-1">Arraste blocos aqui ou clique em "Adicionar bloco"</p>
-                  <small class="text-secondary">A página ainda está vazia</small>
-                </div>
 
-                <h6 class="mb-3"><i class="bi bi-plus-square me-2"></i>Adicionar bloco</h6>
-                <div class="row g-2">
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                <!-- Blocos base -->
+                <h6 class="text-secondary small text-uppercase mb-2 mt-1">Essenciais</h6>
+                <div class="row g-2 mb-3" id="baseBlocks">
+
+                  <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="navbar" data-plugin="">
                       <i class="bi bi-window-top me-2"></i>Navbar
                     </button>
                   </div>
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                  <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="hero" data-plugin="">
                       <i class="bi bi-stars me-2"></i>Hero
                     </button>
                   </div>
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                  <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="features" data-plugin="">
                       <i class="bi bi-list-check me-2"></i>Features
                     </button>
                   </div>
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                  <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="testimonials" data-plugin="">
                       <i class="bi bi-quote me-2"></i>Depoimentos
                     </button>
                   </div>
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                  <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="pricing" data-plugin="">
                       <i class="bi bi-tags me-2"></i>Pricing
                     </button>
                   </div>
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                  <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="cta" data-plugin="">
                       <i class="bi bi-megaphone me-2"></i>CTA
                     </button>
                   </div>
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                  <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="gallery" data-plugin="">
                       <i class="bi bi-images me-2"></i>Galeria
                     </button>
                   </div>
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                  <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="contact" data-plugin="">
                       <i class="bi bi-envelope me-2"></i>Contato
                     </button>
                   </div>
-                  <div class="col-6 col-md-4">
-                    <button class="btn btn-outline-secondary w-100 text-start">
+                  <div class="col-12">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="footer" data-plugin="">
                       <i class="bi bi-layout-text-window-reverse me-2"></i>Footer
                     </button>
                   </div>
                 </div>
 
+                <!-- Blocos de plugins -->
+                <h6 class="text-secondary small text-uppercase mb-2 mt-4 d-flex justify-content-between align-items-center">
+                  <span><i class="bi bi-puzzle me-1"></i>Plugins</span>
+                  <span class="badge text-bg-secondary" id="pluginBlocksHint">ative plugins</span>
+                </h6>
+                <div class="row g-2 mb-3" id="pluginBlocks">
+
+                  <!-- AOS -->
+                  <div class="col-6 d-none" data-requires="aos">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="aosSection" data-plugin="aos">
+                      <i class="bi bi-arrow-down-circle me-2"></i>AOS Section
+                    </button>
+                  </div>
+
+                  <!-- SwiperJS -->
+                  <div class="col-6 d-none" data-requires="swiper">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="swiperCarousel" data-plugin="swiper">
+                      <i class="bi bi-arrow-repeat me-2"></i>Carousel
+                    </button>
+                  </div>
+
+                  <!-- Fancybox -->
+                  <div class="col-6 d-none" data-requires="fancybox">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="fancyboxGallery" data-plugin="fancybox">
+                      <i class="bi bi-images me-2"></i>Galeria Lightbox
+                    </button>
+                  </div>
+
+                  <!-- TypedJS -->
+                  <div class="col-6 d-none" data-requires="typed">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="typedHero" data-plugin="typed">
+                      <i class="bi bi-keyboard me-2"></i>Typed Hero
+                    </button>
+                  </div>
+
+                  <!-- ChartJS -->
+                  <div class="col-6 d-none" data-requires="chartjs">
+                    <button class="btn btn-outline-secondary w-100 text-start block-card" data-block="chartSection" data-plugin="chartjs">
+                      <i class="bi bi-bar-chart me-2"></i>Gráfico
+                    </button>
+                  </div>
+
+                  <!-- Placeholder quando nenhum plugin ativo -->
+                  <div class="col-12" id="noPluginsMessage">
+                    <div class="alert alert-secondary border-secondary mb-0 small text-center">
+                      <i class="bi bi-info-circle me-1"></i>
+                      Ative plugins na aba <strong>Plugins</strong> para desbloquear blocos extras.
+                    </div>
+                  </div>
+
+                </div>
+
                 <div class="alert alert-secondary border-secondary mt-4 mb-0 small">
                   <i class="bi bi-lightbulb me-2"></i>
-                  Plugins ativos aparecem aqui como blocos disponíveis (ex.: carousel do SwiperJS, gráfico do ChartJS).
+                  Clique em um bloco para adicioná-lo à página ao lado.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna direita: Construtor -->
+          <div class="col-12 col-lg-7 col-xl-8">
+            <div class="card bg-body-tertiary border-secondary h-100">
+              <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-grid-3x3-gap me-2"></i>Construtor — blocos da página</h6>
+                <span class="badge text-bg-secondary" id="blocksBadge">0 blocos</span>
+              </div>
+              <div class="card-body">
+                <div class="builder-canvas p-4 mb-3 d-flex flex-column align-items-center justify-content-center">
+                  <i class="bi bi-plus-circle fs-1 text-secondary mb-2"></i>
+                  <p class="text-secondary mb-1 text-center">Clique em um bloco na coluna à esquerda para começar</p>
+                  <small class="text-secondary">A página ainda está vazia</small>
+                </div>
+
+                <div class="alert alert-secondary border-secondary mb-0 small">
+                  <i class="bi bi-hand-index me-2"></i>
+                  Blocos adicionados aparecem aqui com botão para remover. A ordem dos cards é a ordem no HTML final.
                 </div>
               </div>
             </div>
@@ -280,7 +344,7 @@
       <section id="section-temas" class="d-none">
         <div class="row g-4">
 
-          <div class="col-lg-5">
+          <div class="col-12 col-lg-5">
             <div class="card bg-body-tertiary border-secondary h-100">
               <div class="card-header border-secondary">
                 <h6 class="mb-0"><i class="bi bi-palette me-2"></i>Temas prontos</h6>
@@ -318,7 +382,7 @@
             </div>
           </div>
 
-          <div class="col-lg-7">
+          <div class="col-12 col-lg-7">
             <div class="card bg-body-tertiary border-secondary h-100">
               <div class="card-header border-secondary">
                 <h6 class="mb-0"><i class="bi bi-sliders me-2"></i>Personalizar tema</h6>
@@ -336,15 +400,15 @@
                   </select>
                 </div>
                 <div class="row g-3 mb-3">
-                  <div class="col-md-4">
+                  <div class="col-6 col-md-4">
                     <label class="form-label">Cor primária</label>
                     <input type="color" class="form-control form-control-color w-100" value="#0d6efd">
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-6 col-md-4">
                     <label class="form-label">Cor secundária</label>
                     <input type="color" class="form-control form-control-color w-100" value="#6610f2">
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-12 col-md-4">
                     <label class="form-label">Cor de fundo</label>
                     <input type="color" class="form-control form-control-color w-100" value="#ffffff">
                   </div>
@@ -367,7 +431,7 @@
       <!-- ============ SECTION: SEO ============ -->
       <section id="section-seo" class="d-none">
         <div class="row g-4">
-          <div class="col-lg-6">
+          <div class="col-12 col-lg-6">
             <div class="card bg-body-tertiary border-secondary">
               <div class="card-header border-secondary">
                 <h6 class="mb-0"><i class="bi bi-search me-2"></i>Metatags de SEO</h6>
@@ -404,7 +468,7 @@
             </div>
           </div>
 
-          <div class="col-lg-6">
+          <div class="col-12 col-lg-6">
             <div class="card bg-body-tertiary border-secondary mb-4">
               <div class="card-header border-secondary">
                 <h6 class="mb-0"><i class="bi bi-facebook me-2"></i>OpenGraph</h6>
@@ -423,7 +487,7 @@
                   <input type="url" class="form-control" placeholder="https://exemplo.com.br/og-image.jpg">
                 </div>
                 <div class="row g-3">
-                  <div class="col-md-6">
+                  <div class="col-12 col-md-6">
                     <label class="form-label">og:type</label>
                     <select class="form-select">
                       <option>website</option>
@@ -431,7 +495,7 @@
                       <option>product</option>
                     </select>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-12 col-md-6">
                     <label class="form-label">og:locale</label>
                     <input type="text" class="form-control" value="pt_BR">
                   </div>
@@ -469,8 +533,8 @@
         </div>
 
         <div class="row g-3">
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="animatecss">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -480,8 +544,8 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="bulma">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -491,8 +555,8 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="gsap">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -502,8 +566,8 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="splide">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -513,8 +577,8 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="swiper">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -524,8 +588,8 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="typed">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -535,8 +599,8 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="chartjs">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -546,8 +610,8 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="fancybox">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -557,8 +621,8 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="card bg-body-tertiary border-secondary plugin-card h-100">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border-secondary plugin-card h-100" data-plugin="aos">
               <div class="card-body">
                 <div class="form-check form-switch float-end">
                   <input class="form-check-input" type="checkbox" role="switch">
@@ -574,9 +638,9 @@
       <!-- ============ SECTION: GERAR ============ -->
       <section id="section-gerar" class="d-none">
         <div class="row justify-content-center">
-          <div class="col-lg-8">
+          <div class="col-12 col-md-10 col-lg-8">
             <div class="card bg-body-tertiary border-secondary text-center">
-              <div class="card-body p-5">
+              <div class="card-body p-4 p-md-5">
                 <i class="bi bi-rocket-takeoff display-3 text-primary mb-3 d-block"></i>
                 <h3 class="mb-2">Pronto para gerar o site?</h3>
                 <p class="text-secondary mb-4">
@@ -600,7 +664,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="border-top bg-body-tertiary px-4 py-2 text-center">
+    <footer class="border-top bg-body-tertiary px-3 px-md-4 py-2 text-center">
       <small class="text-secondary">
         <i class="bi bi-c-circle me-1"></i> Aton WEB Builder — uso interno da agência Aton WEB
       </small>
